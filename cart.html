@@ -1,0 +1,848 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Your Cart & Finalize Order — Ripped Index</title>
+  <meta name="description" content="View your shopping cart and finalize your order — Ripped Index">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #0A66CC;
+      --bg: #f6fbff;
+      --card: #fff;
+      --muted: #6b7280;
+      --text: #0b1220;
+      --container: 1180px;
+      --radius: 12px;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: "Inter", system-ui, sans-serif; background: var(--bg); color: var(--text); }
+    a { color: inherit; text-decoration: none; }
+
+    .container { max-width: var(--container); margin: 0 auto; padding: 28px; }
+
+    /* Header */
+    header { position: sticky; top: 0; background: rgba(255,255,255,0.96); backdrop-filter: blur(4px); border-bottom: 1px solid rgba(7,22,42,0.04); z-index: 999; }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; gap: 12px; max-width: var(--container); margin: 0 auto; padding: 14px 18px; }
+    .logo { width: 48px; height: 48px; border-radius: 10px; background: linear-gradient(180deg, var(--primary), #075bb3); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 18px; }
+    nav.main { display: flex; gap: 14px; align-items: center; }
+    nav.main a { padding: 8px 12px; border-radius: 10px; color: var(--muted); font-weight: 600; }
+
+    /* Cart Layout */
+    /* Reduced max-width for better two-column layout on this page */
+    .cart-layout { display: grid; grid-template-columns: 2fr 340px; gap: 24px; margin-top: 20px; max-width: 1000px; margin-left: auto; margin-right: auto;}
+
+    /* Cart Items Column */
+    .cart-items { background: var(--card); border-radius: 14px; box-shadow: 0 10px 30px rgba(5,12,30,0.06); overflow: hidden; }
+    .cart-header { padding: 18px; border-bottom: 1px solid #f0f4f8; font-weight: 700; font-size: 18px; }
+
+    .cart-row { display: flex; align-items: center; padding: 18px; border-bottom: 1px solid #f0f4f8; gap: 16px; }
+    .cart-row:last-child { border-bottom: 0; }
+
+    .item-img { width: 80px; height: 80px; background: #f2f6fb; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
+
+    .item-details { flex: 1; }
+    .item-name { font-weight: 700; font-size: 15px; margin-bottom: 4px; line-height: 1.3; }
+    .item-meta { color: var(--muted); font-size: 13px; }
+
+    .item-qty { display: flex; align-items: center; background: #f0f4f8; border-radius: 8px; padding: 4px; }
+    .qty-btn { width: 28px; height: 28px; border: 0; background: #fff; border-radius: 6px; cursor: pointer; font-weight: 700; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .qty-val { width: 32px; text-align: center; font-size: 14px; font-weight: 600; }
+
+    .item-price { 
+        font-weight: 700; 
+        font-size: 16px; 
+        min-width: 100px; 
+        text-align: right; 
+        flex-shrink: 0;
+    }
+    .item-remove { color: #dc2626; font-size: 12px; margin-top: 6px; cursor: pointer; text-decoration: underline; background: 0; border: 0; padding: 0; }
+
+    /* Summary Column */
+    .summary-card { background: var(--card); border-radius: 14px; padding: 24px; box-shadow: 0 10px 30px rgba(5,12,30,0.06); position: sticky; top: 100px; }
+    .summary-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
+    .summary-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px; }
+    .summary-row.total { border-top: 1px dashed #e5e7eb; padding-top: 16px; margin-top: 16px; font-weight: 800; font-size: 18px; color: var(--primary); }
+
+    .shipping-toggle { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding: 12px; background: #f8fafc; border-radius: 8px; }
+    .shipping-toggle label { font-weight: 600; font-size: 14px; }
+
+    /* Promo Input */
+    .promo-input-group { display: flex; margin-bottom: 16px; }
+    .promo-input-group input { flex: 1; padding: 10px 12px; border: 1px solid #e2e8f0; border-right: 0; border-radius: 8px 0 0 8px; font-size: 14px; }
+    .promo-input-group button { background: var(--primary); color: #fff; padding: 10px 14px; border: 0; border-radius: 0 8px 8px 0; font-weight: 600; cursor: pointer; transition: background .2s; }
+    .promo-input-group button:hover { background: #0855aa; }
+    .promo-message { font-size: 12px; color: #16a34a; margin-top: -8px; margin-bottom: 12px; }
+    .promo-message.error { color: #dc2626; }
+
+
+    .btn-checkout { display: block; width: 100%; background: var(--primary); color: #fff; text-align: center; padding: 14px; border-radius: 10px; font-weight: 700; margin-top: 20px; border: 0; cursor: pointer; transition: background .2s; }
+    .btn-checkout:hover { background: #0855aa; }
+
+    .empty-state { padding: 60px 20px; text-align: center; }
+    .empty-icon { font-size: 48px; margin-bottom: 16px; display: block; }
+    .btn-shop { display: inline-block; margin-top: 16px; background: var(--primary); color: #fff; padding: 10px 20px; border-radius: 10px; font-weight: 700; }
+
+    /* Footer */
+    footer { margin-top: 40px; background: #eaf6ff; padding: 22px; border-top: 1px solid rgba(7,22,42,0.04); }
+    .footer-inner { max-width: var(--container); margin: 0 auto; text-align: center; color: #05324a; }
+    
+    /* NEW: Checkout Form & Payment Styles */
+    .form-section h2 { 
+        font-size: 20px; border-bottom: 1px solid #e5e7eb; padding-bottom: 10px; 
+        margin-top: 30px; margin-bottom: 20px; 
+    }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+    input:not([type="radio"]):not([type="checkbox"]), select {
+      width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 16px;
+    }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
+    .payment-options { display: flex; flex-direction: column; gap: 10px; }
+    .payment-method { 
+      border: 1px solid #d1d5db; border-radius: 8px; padding: 15px; cursor: pointer;
+      transition: all 0.2s; position: relative;
+    }
+    .payment-method.selected { border-color: var(--primary); background: #eaf6ff; }
+    .payment-method input[type="radio"] { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); }
+    .method-title { font-weight: 700; margin-bottom: 4px; }
+    .method-desc { font-size: 13px; color: var(--muted); }
+
+    .payment-details { 
+        margin-top: 15px; padding: 15px; border-top: 1px solid #d1d5db;
+        background: var(--card); border-radius: 8px; font-size: 14px;
+        line-height: 1.5;
+    }
+    .payment-details strong { display: block; margin-bottom: 8px; color: var(--text); }
+    .wallet-address { 
+        font-family: monospace; background: #f0f4f8; padding: 8px; 
+        border-radius: 6px; word-break: break-all; margin-top: 6px;
+        display: flex; justify-content: space-between; align-items: center;
+    }
+    .copy-btn { 
+        background: var(--primary); color: #fff; padding: 4px 8px; 
+        border: 0; border-radius: 4px; cursor: pointer; margin-left: 8px;
+    }
+    .contact-info a { color: var(--primary); font-weight: 600; }
+    
+    /* Confirmation Modal */
+    .modal-overlay { 
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+      background: rgba(0,0,0,0.7); display: none; justify-content: center; 
+      align-items: center; z-index: 1000;
+    }
+    .modal-content {
+      background: var(--card); padding: 40px; border-radius: 12px; 
+      max-width: 400px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    .modal-content h3 { color: var(--primary); margin-top: 0; }
+    .btn-home { 
+      background: var(--primary); color: #fff; padding: 10px 20px; 
+      border-radius: 8px; margin-top: 20px; display: inline-block;
+    }
+
+    @media(max-width: 1000px) {
+      .cart-layout { grid-template-columns: 1fr; max-width: 700px; }
+    }
+    
+    @media(max-width: 800px) {
+      /* Simplified layout for smaller screens */
+      .cart-row { 
+        align-items: flex-start;
+        flex-wrap: wrap; 
+        padding: 18px 12px; 
+      }
+      .item-details { width: 100%; margin-bottom: 12px; }
+      .item-qty { margin-right: 16px; }
+      .item-price { text-align: left; min-width: unset; }
+    }
+    
+    @media (max-width: 450px) {
+        .cart-row { flex-direction: column; align-items: flex-start; }
+        .item-img { margin-bottom: 10px; }
+        .item-details { margin-bottom: 10px; }
+        .item-qty { margin-bottom: 10px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="nav-inner">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="logo">RI</div>
+      <div>
+        <div style="font-weight:700">Ripped Index</div>
+        <div style="font-size:12px;color:var(--muted)">Shopping Cart</div>
+      </div>
+    </div>
+    <nav class="main">
+      <a href="index.html">Home</a>
+      <a href="store.html">Store</a>
+    </nav>
+  </div>
+</header>
+
+<div class="container">
+  <h1>Your Cart</h1>
+
+  <div id="loading" style="padding:40px;text-align:center;color:var(--muted)">Loading cart...</div>
+
+  <div id="cartContent" class="cart-layout" style="display:none">
+
+    <div class="cart-items">
+      <div class="cart-header">Items (<span id="itemCountDisplay">0</span>)</div>
+      <div id="cartList">
+        </div>
+      
+      <div class="form-section" style="padding:18px;">
+        <h2>1. Contact & Shipping Information</h2>
+        <form id="shippingForm">
+          <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone" required>
+            </div>
+            
+        
+            <div class="grid-2">
+                <div class="form-group">
+                    <label for="Address">Address</label>
+                    <input type="text" id="Address" required>
+                </div>
+                
+            </div>
+             <div class="form-group">
+                <label for="country">Country</label>
+                <input type="text" id="country" required>
+            </div>
+            <div class="form-group">
+                <label for="state">State</label>
+                <input type="text" id="state" required>
+            </div>
+            <div class="form-group">
+                <label for="notes">Order Notes (Optional)</label>
+                <textarea id="notes" rows="3" style="width:100%; padding:12px; border:1px solid #d1d5db; border-radius:8px; font-size:16px;"></textarea>
+            </div>
+        </form>
+      </div>
+
+      <div class="form-section" style="padding:18px; border-top: 1px solid #f0f4f8;">
+        <h2>2. Select Payment Method</h2>
+        <div class="payment-options">
+          
+          <div class="payment-method selected" data-method="BTC" onclick="selectPayment('BTC')">
+            <input type="radio" name="payment" value="BTC" checked>
+            <div class="method-title">Bitcoin (BTC)</div>
+            <div class="method-desc">Pay directly to our wallet. Instant processing.</div>
+            <div class="payment-details" id="details-BTC">
+                <strong>Transfer the final amount to this address:</strong>
+                <div class="wallet-address">
+                    <span id="btcAddress">1H7QyCp7Htpf329CEb2pzj6a4JYGHtm6bD</span>
+                    <button class="copy-btn" onclick="copyAddress('btcAddress', event)">Copy</button>
+                </div>
+                <p style="margin-top:10px;">**Important:** Send the **exact** final amount displayed to ensure proper order allocation.</p>
+            </div>
+          </div>
+          
+          <div class="payment-method" data-method="USDT" onclick="selectPayment('USDT')">
+            <input type="radio" name="payment" value="USDT">
+            <div class="method-title">USDT (Tether) - TRC20</div>
+            <div class="method-desc">Stablecoin payment. Fast and reliable (TRC20 network only).</div>
+            <div class="payment-details" id="details-USDT" style="display:none;">
+                <strong>Transfer the final amount to this address (TRC20 Network):</strong>
+                <div class="wallet-address">
+                    <span id="usdtAddress">TYVc7KwJUBEe2HMZkUyCRxMhtmQ1Ck5Ybd</span>
+                    <button class="copy-btn" onclick="copyAddress('usdtAddress', event)">Copy</button>
+                </div>
+                <p style="margin-top:10px;">**Important:** Use the **TRC20 (Tron)** network only. Send the **exact** final amount.</p>
+            </div>
+          </div>
+
+          <div class="payment-method" data-method="BankTransfer" onclick="selectPayment('BankTransfer')">
+            <input type="radio" name="payment" value="BankTransfer">
+            <div class="method-title">Bank Transfer / Zelle</div>
+            <div class="method-desc">For larger orders or specific regions.</div>
+            <div class="payment-details" id="details-BankTransfer" style="display:none;">
+                <strong>Contact Support to get payment details.</strong>
+                <p class="contact-info">
+                    Please use the **Live Chat Support** button (bottom right) or <a href="mailto:support@rippedindexfit">email support@rippedindexfit</a> after placing your order to receive banking details.
+                </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+
+    <div class="summary">
+      <div class="summary-card">
+        <div class="summary-title">Order Summary</div>
+
+        <div class="shipping-toggle">
+          <label for="shippingToggle">Shipping Required?</label>
+          <input type="checkbox" id="shippingToggle" onchange="toggleShipping(this.checked)">
+        </div>
+
+        <div class="promo-input-group">
+          <input type="text" id="promoInput" placeholder="Promo Code">
+          <button onclick="applyPromoCode()">Apply</button>
+        </div>
+        <div id="promoMessage" class="promo-message" style="display:none;"></div>
+
+        <div class="summary-row">
+          <span class="muted">Subtotal</span>
+          <span id="subTotal">$0.00</span>
+        </div>
+
+        <div class="summary-row" id="discountRow" style="display:none;">
+          <span class="muted" style="color:#16a34a;">Discount (<span id="discountPercent">0%</span>)</span>
+          <span id="discountValue" style="color:#16a34a;">-$0.00</span>
+        </div>
+
+        <div class="summary-row" id="shippingRow">
+          <span class="muted">Shipping</span>
+          <span id="shippingCost">Free</span>
+        </div>
+
+        <div class="summary-row">
+          <span class="muted">Tax</span>
+          <span>$0.00</span>
+        </div>
+
+        <div class="summary-row total">
+          <span>Final Total</span>
+          <span id="finalTotal">$0.00</span>
+        </div>
+
+        <button class="btn-checkout" id="finalizeOrderBtn" onclick="handleCheckout()">Finalize Order & Get Payment Details</button>
+
+        <div style="margin-top:16px;font-size:12px;color:var(--muted);text-align:center;line-height:1.4">
+          By clicking 'Finalize Order', you agree to our Terms & Conditions.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="emptyCart" class="empty-state" style="display:none">
+    <span class="empty-icon">🛒</span>
+    <h2>Your cart is empty</h2>
+    <p class="muted">Looks like you haven't added any products yet.</p>
+    <a href="store.html" class="btn-shop">Browse Store</a>
+  </div>
+</div>
+
+<div id="confirmationModal" class="modal-overlay">
+  <div class="modal-content">
+    <h3>✅ Order Finalized!</h3>
+    <p>Your order details have been successfully sent for processing.</p>
+    <p id="paymentConfirmationText"></p>
+    <p>Please follow the instructions on the page to complete your payment.</p>
+    <a href="store.html" class="btn-home">Go to Store</a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    © <span id="year"></span> Ripped Index — All rights reserved
+  </div>
+</footer>
+
+<script type="text/javascript">
+/* Tawk.to Live Chat Script */
+var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+(function(){
+var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+s1.async=true;
+s1.src='https://embed.tawk.to/6935c9614699f5197df5035d/default';
+s1.charset='UTF-8';
+s1.setAttribute('crossorigin','*');
+s0.parentNode.insertBefore(s1,s0);
+})();
+</script>
+
+<script>
+/* ------------------------------------------------
+   Cart & Single-Page Checkout Logic
+   ------------------------------------------------ */
+
+// --- EmailJS Setup (NEW) ---
+/* IMPORTANT: Replace "YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", and "YOUR_PUBLIC_KEY" with your actual EmailJS credentials. */
+const EMAILJS_SERVICE_ID = "Testing"; 
+const EMAILJS_TEMPLATE_ID = "template_l2pru5h"; 
+const EMAILJS_PUBLIC_KEY = "uxpve7I9VNOBYVeuT"; 
+
+// Load the EmailJS library
+const script = document.createElement('script');
+script.type = 'text/javascript';
+script.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
+document.head.appendChild(script);
+
+// Initialize EmailJS when the script loads
+script.onload = function() {
+  if (typeof emailjs !== 'undefined') {
+    emailjs.init(EMAILJS_PUBLIC_KEY);
+  } else {
+    console.error("EmailJS failed to load.");
+  }
+};
+// --- End EmailJS Setup ---
+
+
+let PRODUCTS = [];
+let CART_STATE = {
+  items: {},
+  isShippingRequired: false,
+  promoCode: null,
+};
+const CART_KEY = 'nassalab_cart_v1';
+const SHIPPING_FEE =20; // $60 shipping fee
+
+// Define Promo Codes
+const PROMO_CODES = {
+  CALI20: 0.10, NEWGUY: 0.05, BOOST: 0.08, BOGO: 0.15,
+};
+
+// Define Wallet Addresses
+const WALLET_ADDRESSES = {
+    BTC: '1H7QyCp7Htpf329CEb2pzj6a4JYGHtm6bD',
+    USDT: 'TYVc7KwJUBEe2HMZkUyCRxMhtmQ1Ck5Ybd'
+};
+let selectedPaymentMethod = 'BTC'; // Default selection
+
+document.getElementById('year').textContent = new Date().getFullYear();
+
+// --- Helper Functions ---
+function parsePrice(raw) {
+  if (typeof raw === 'number') return raw;
+  if (!raw) return 0;
+  return parseFloat(String(raw).replace(/[^0-9.]/g, '')) || 0;
+}
+
+function formatPrice(num) {
+  return '$' + Math.round(num).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+}
+
+function normalizeImage(p) {
+  if (!p.images) return 'placeholder.jpg';
+  if (Array.isArray(p.images)) return p.images[0] || 'placeholder.jpg';
+  if (typeof p.images === 'object') return p.images.front || Object.values(p.images)[0] || 'placeholder.jpg';
+  return String(p.images);
+}
+
+function getDiscountPercentage(code) {
+    if (!code) return 0;
+    const upperCode = code.toUpperCase();
+    return PROMO_CODES[upperCode] || 0;
+}
+
+function saveCartState() {
+  localStorage.setItem(CART_KEY, JSON.stringify(CART_STATE));
+  window.dispatchEvent(new Event('storage')); 
+}
+
+function calculateTotals() {
+    let subtotal = 0;
+    
+    // Calculate Subtotal
+    Object.keys(CART_STATE.items).forEach(id => {
+        const qty = CART_STATE.items[id];
+        if (qty <= 0) return;
+
+        const product = PRODUCTS.find(p => String(p.id) === id || p.slug === id);
+        if (product) {
+            const price = parsePrice(product.price);
+            subtotal += price * qty;
+        }
+    });
+
+    // Calculate Discount
+    const discountRate = getDiscountPercentage(CART_STATE.promoCode);
+    const discountValue = subtotal * discountRate;
+    const subtotalAfterDiscount = subtotal - discountValue;
+    
+    // Calculate Shipping
+    const shippingCost = CART_STATE.isShippingRequired ? SHIPPING_FEE : 0;
+    
+    // Final Total
+    const finalTotal = subtotalAfterDiscount + shippingCost;
+
+    return { subtotal, discountValue, discountRate, shippingCost, finalTotal };
+}
+
+// --- Main Cart Functions ---
+
+async function init() {
+  try {
+    // Load local cart state
+    const rawState = localStorage.getItem(CART_KEY);
+    const loadedState = rawState ? JSON.parse(rawState) : {};
+
+    if (!loadedState.items && rawState && rawState.startsWith('{') && !rawState.includes('isShippingRequired')) {
+      CART_STATE.items = loadedState; 
+    } else {
+      CART_STATE = { ...CART_STATE, ...loadedState };
+    }
+
+    // Load DB
+    const res = await fetch('products.json');
+    let data = await res.json();
+    if(data.products) data = data.products; 
+    PRODUCTS = Array.isArray(data) ? data : [];
+
+    // Sync state to UI elements
+    document.getElementById('shippingToggle').checked = CART_STATE.isShippingRequired;
+    if (CART_STATE.promoCode) {
+      document.getElementById('promoInput').value = CART_STATE.promoCode;
+    }
+    
+    render();
+    document.getElementById('loading').style.display = 'none';
+    
+    // Initialize default payment selection UI
+    selectPayment(selectedPaymentMethod);
+    
+  } catch (err) {
+    console.error(err);
+    document.getElementById('loading').innerHTML = 'Error loading cart data.';
+  }
+}
+
+function render() {
+  const container = document.getElementById('cartContent');
+  const emptyState = document.getElementById('emptyCart');
+  const listEl = document.getElementById('cartList');
+
+  const ids = Object.keys(CART_STATE.items);
+
+  if (ids.length === 0 || ids.every(k => CART_STATE.items[k] <= 0)) {
+    container.style.display = 'none';
+    emptyState.style.display = 'block';
+    CART_STATE.isShippingRequired = false;
+    CART_STATE.promoCode = null;
+    saveCartState();
+    return;
+  }
+
+  container.style.display = 'grid';
+  emptyState.style.display = 'none';
+  listEl.innerHTML = '';
+  
+  window.ORDER_ITEMS_DETAIL = [];
+
+  let subtotal = 0;
+  let totalItems = 0;
+
+  // Build rows and calculate subtotal
+  ids.forEach(id => {
+    const qty = CART_STATE.items[id];
+    if (qty <= 0) return;
+
+    const product = PRODUCTS.find(p => String(p.id) === id || p.slug === id);
+
+    if (!product) {
+      delete CART_STATE.items[id];
+      saveCartState();
+      return;
+    }
+
+    const price = parsePrice(product.price);
+    const lineTotal = price * qty;
+    subtotal += lineTotal;
+    totalItems += qty;
+    
+    // Store details for email
+    window.ORDER_ITEMS_DETAIL.push({
+        name: product.name,
+        qty: qty,
+        price: price,
+        lineTotal: lineTotal
+    });
+
+    const row = document.createElement('div');
+    row.className = 'cart-row';
+    row.innerHTML = `
+      <img src="${normalizeImage(product)}" class="item-img" alt="${product.name}">
+      
+      <div class="item-details">
+        <div class="item-name"><a href="product.html?slug=${product.slug}">${product.name}</a></div>
+        <div class="item-meta">${product.category || 'Product'}</div>
+        <button class="item-remove" onclick="removeItem('${id}')">Remove</button>
+      </div>
+
+      <div class="item-qty">
+        <button class="qty-btn" onclick="updateQty('${id}', -1)" aria-label="Decrease quantity">−</button>
+        <span class="qty-val">${qty}</span>
+        <button class="qty-btn" onclick="updateQty('${id}', 1)" aria-label="Increase quantity">+</button>
+      </div>
+
+      <div class="item-price">
+        <div>${formatPrice(lineTotal)}</div>
+        <div style="font-size:12px;color:var(--muted);font-weight:400">${formatPrice(price)} ea</div>
+      </div>
+    `;
+    listEl.appendChild(row);
+  });
+
+  // --- Summary Calculations ---
+  const totals = calculateTotals();
+  
+  // Store final calculation values in a global object for checkout
+  window.ORDER_TOTALS = {
+      subtotal: totals.subtotal,
+      discountValue: totals.discountValue,
+      shippingCost: totals.shippingCost,
+      finalTotal: totals.finalTotal,
+      isShippingRequired: CART_STATE.isShippingRequired,
+      promoCode: CART_STATE.promoCode
+  };
+
+  // --- Update Summary UI ---
+
+  document.getElementById('itemCountDisplay').textContent = totalItems;
+  document.getElementById('subTotal').textContent = formatPrice(totals.subtotal);
+
+  // Discount UI
+  const discountRow = document.getElementById('discountRow');
+  if (totals.discountValue > 0) {
+    discountRow.style.display = 'flex';
+    document.getElementById('discountPercent').textContent = `${Math.round(totals.discountRate * 100)}%`;
+    document.getElementById('discountValue').textContent = `-${formatPrice(totals.discountValue)}`;
+  } else {
+    discountRow.style.display = 'none';
+  }
+
+  // Shipping UI
+  document.getElementById('shippingCost').textContent = totals.shippingCost > 0 ? formatPrice(totals.shippingCost) : 'Free';
+
+  // Final Total UI
+  document.getElementById('finalTotal').textContent = formatPrice(totals.finalTotal);
+
+  // Promo message UI
+  const promoMessageEl = document.getElementById('promoMessage');
+  if (CART_STATE.promoCode && totals.discountValue > 0) {
+    promoMessageEl.textContent = `Promo code '${CART_STATE.promoCode.toUpperCase()}' applied.`;
+    promoMessageEl.className = 'promo-message';
+    promoMessageEl.style.display = 'block';
+  } else if (CART_STATE.promoCode && totals.discountValue === 0) {
+     promoMessageEl.textContent = `Promo code '${CART_STATE.promoCode.toUpperCase()}' is invalid.`;
+     promoMessageEl.className = 'promo-message error';
+     promoMessageEl.style.display = 'block';
+  } else {
+    promoMessageEl.style.display = 'none';
+  }
+}
+
+// 3. Cart Actions (Unchanged)
+window.toggleShipping = function(isChecked) {
+  CART_STATE.isShippingRequired = isChecked;
+  saveCartState();
+  render();
+}
+
+window.applyPromoCode = function() {
+  const input = document.getElementById('promoInput').value.trim().toUpperCase();
+  if (input === '') {
+    CART_STATE.promoCode = null;
+  } else {
+    CART_STATE.promoCode = input;
+  }
+  saveCartState();
+  render();
+};
+
+window.updateQty = function(id, change) {
+  if (!CART_STATE.items[id]) return;
+  CART_STATE.items[id] += change;
+  if (CART_STATE.items[id] <= 0) {
+    delete CART_STATE.items[id];
+  }
+  saveCartState();
+  render();
+};
+
+window.removeItem = function(id) {
+  delete CART_STATE.items[id];
+  saveCartState();
+  render();
+};
+
+// --- Payment Selection Logic ---
+
+window.selectPayment = function(method) {
+    selectedPaymentMethod = method;
+    
+    document.querySelectorAll('.payment-method').forEach(el => {
+        el.classList.remove('selected');
+        el.querySelector('input[type="radio"]').checked = false;
+        el.querySelectorAll('.payment-details').forEach(d => d.style.display = 'none');
+    });
+
+    const selectedEl = document.querySelector(`.payment-method[data-method="${method}"]`);
+    selectedEl.classList.add('selected');
+    selectedEl.querySelector('input[type="radio"]').checked = true;
+    document.getElementById(`details-${method}`).style.display = 'block';
+
+    const btn = document.getElementById('finalizeOrderBtn');
+    if (method === 'BankTransfer') {
+         btn.textContent = 'Finalize Order & Contact Support';
+    } else {
+         btn.textContent = 'Finalize Order & Get Payment Details';
+    }
+}
+
+window.copyAddress = function(id, event) {
+    event.stopPropagation(); 
+    event.preventDefault();
+
+    const address = document.getElementById(id).textContent;
+    navigator.clipboard.writeText(address).then(() => {
+        const btn = event.target;
+        const originalText = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(() => { btn.textContent = originalText; }, 1500);
+    }).catch(err => {
+        console.error('Copy failed:', err);
+    });
+}
+
+
+// 4. Checkout Logic (MODIFIED)
+
+window.handleCheckout = async function() {
+    const shippingForm = document.getElementById('shippingForm');
+    
+    if (Object.keys(CART_STATE.items).length === 0) {
+        alert('Your cart is empty. Please add items before checking out.');
+        return;
+    }
+    
+    // 1. Validate Form
+    if (!shippingForm.checkValidity()) {
+        shippingForm.reportValidity();
+        return;
+    }
+
+    if (typeof emailjs === 'undefined') {
+        alert('Email service is not yet initialized. Please wait a moment and try again.');
+        return;
+    }
+    
+    document.getElementById('finalizeOrderBtn').disabled = true;
+
+    // 2. Gather all Data
+    const customerEmail = document.getElementById('email').value;
+    const customerName = document.getElementById('name').value;
+    const customerPhone = document.getElementById('phone').value;
+    const notes = document.getElementById('notes').value;
+    
+    const totals = window.ORDER_TOTALS;
+    const total = formatPrice(totals.finalTotal);
+    const subtotal = formatPrice(totals.subtotal);
+    const discount = formatPrice(totals.discountValue);
+    const shipping = totals.isShippingRequired ? formatPrice(totals.shippingCost) : 'Free';
+    const promo = totals.promoCode || 'N/A';
+    
+    const addressDetails = `
+        Address: ${document.getElementById('Address').value}
+        State: ${document.getElementById('state').value}
+        Country: ${document.getElementById('country').value}
+    `;
+    
+    const orderDetails = window.ORDER_ITEMS_DETAIL.map(item => {
+        return `${item.name} - Qty: ${item.qty} - ${formatPrice(item.lineTotal)} (${formatPrice(item.price)} ea)`;
+    }).join('\n');
+    
+    // 3. Build Email Content
+    const messageContent = `
+        --- NEW Ripped Index ORDER ---
+        
+        Customer Contact:
+        Name: ${customerName}
+        Email: ${customerEmail}
+        Phone: ${customerPhone}
+        
+        Shipping Address:
+        ${addressDetails}
+        
+        Payment Method Selected: ${selectedPaymentMethod}
+        Order Notes: ${notes || 'None'}
+        
+        Order Details:
+        ${orderDetails}
+        
+        --- Summary ---
+        Subtotal: ${subtotal}
+        Discount (${promo}): ${discount}
+        Shipping: ${shipping}
+        
+        FINAL TOTAL: ${total}
+    `;
+
+    const templateParams = {
+        name: customerEmail, // Using email as name placeholder
+        email: customerEmail,
+        total: total,
+        message: messageContent,
+        subject: `New Ripped Index Order - Total ${total}`
+    };
+
+    try {
+        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
+        
+        // 4. Display confirmation
+        let confirmationText = '';
+        if (selectedPaymentMethod === 'BTC' || selectedPaymentMethod === 'USDT') {
+            confirmationText = `Your payment details for **${selectedPaymentMethod}** have been finalized. Please transfer **${total}** to the address shown above on the page.`;
+        } else { // BankTransfer
+            confirmationText = `Your order has been recorded. Please contact **Live Chat Support** or email to receive the bank transfer details for payment.`;
+        }
+        
+        document.getElementById('paymentConfirmationText').innerHTML = confirmationText;
+        document.getElementById('confirmationModal').style.display = 'flex';
+        
+        // 5. Clear the Cart 
+        localStorage.removeItem(CART_KEY);
+        
+        // 6. Redirect to store.html after a delay
+        setTimeout(() => {
+            window.location.href = 'store.html'; 
+        }, 5000); 
+        
+    } catch (err) {
+        document.getElementById('finalizeOrderBtn').disabled = false;
+        alert('❌ Failed to send order details. Please try again or contact support.');
+        console.error("EmailJS Error:", err);
+    }
+};
+
+
+// Start
+init();
+
+</script>
+<!--Start of Tawk.to Script-->
+<script type="text/javascript">
+var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+(function(){
+var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+s1.async=true;
+s1.src='https://embed.tawk.to/695572b3fb875a197d2be0c0/default';
+s1.charset='UTF-8';
+s1.setAttribute('crossorigin','*');
+s0.parentNode.insertBefore(s1,s0);
+})();
+</script>
+<!--End of Tawk.to Script-->
+</body>
+</html>
