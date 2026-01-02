@@ -256,6 +256,15 @@
       .product-actions {gap: 4px;}
       .product-name {font-size: 13px; max-width: 55%;}
     }
+    body{
+      margin:0;
+      font-family:"Inter",system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+      background:var(--bg);
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
+      /* FIX 1: Prevent mobile overflow */
+      overflow-x: hidden; 
+    }
   </style>
 </head>
 <body>
