@@ -14,14 +14,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <!-- SEO Title -->
-  <title>Ripped Index | Performance Supplements, Peptides & Research Products</title>
+  <title>Nassa Labs | Performance Supplements, Peptides & Research Products</title>
 <link rel="icon" href="/favicon.ico" type="image/x-icon">
 
   <!-- SEO Meta Description -->
-  <meta name="description" content="Ripped Index provides premium performance supplements, peptides, SARMs, PCT and research products with discreet shipping and secure checkout." />
+  <meta name="description" content="Nassa Labs provides premium performance supplements, peptides, SARMs, PCT and research products with discreet shipping and secure checkout." />
 
   <!-- Canonical -->
-  <link rel="canonical" href="https://rippedindex.fit/">
+  <link rel="canonical" href="https://nassa-labs.fit/">
 
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -46,7 +46,7 @@
     .nav-inner{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:var(--container);margin:0 auto;padding:14px 18px}
     .brand{display:flex;align-items:center;gap:12px}
     .logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(180deg,var(--primary),#075bb3);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
-    
+
     /* New: Menu Toggle Button */
     .menu-toggle{
       background:none; border:none; font-size:24px; color:var(--text); cursor:pointer; padding: 0 8px 0 0;
@@ -55,7 +55,7 @@
       order: -1; /* Place before logo in flex container */
     }
     /* ... inside your <style> block ... */
-    
+
     body{
       /* Add this line to prevent horizontal scroll */
       overflow-x: hidden; 
@@ -65,7 +65,7 @@
       color:var(--text);
       -webkit-font-smoothing:antialiased
     }
-    
+
     /* ... rest of your CSS ... */
 
     nav.main{display:flex;gap:14px;align-items:center}
@@ -192,7 +192,7 @@
     .why-card{display:flex;gap:12px;align-items:center}
     .why-card img{width:96px;height:72px;object-fit:cover;border-radius:8px}
     .why-list{padding-left:8px}
-    
+
     /* Touchdown Gallery (Updated for 6 images in 3 columns) */
     .touchdown{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
     .touchdown img {width:100%; height: 200px; object-fit: cover; border-radius: 12px; box-shadow:0 4px 12px rgba(5,12,30,0.08);}
@@ -228,7 +228,7 @@
         color: var(--muted);
     }
 
-    
+
     /* Reviews + FAQ */
     .reviews{padding:30px 0}
     .review-card{background:#fff;border-radius:12px;padding:22px;box-shadow:0 12px 34px rgba(5,12,30,0.06);text-align:center}
@@ -277,10 +277,10 @@ html, body {
   <div class="nav-inner">
     <div class="brand">
       <button id="menuToggle" class="menu-toggle" aria-label="Toggle categories menu">☰</button>
-      <div class="logo">NL</div>
+      <div class="logo">RI</div>
       <div>
         <div style="font-weight:700">Ripped Index</div>
-        <div style="font-size:12px;color:var(--muted)">Ripped Index: Home</div>
+        <div style="font-size:12px;color:var(--muted)">Nassa Labs: Home</div>
       </div>
     </div>
 
@@ -460,12 +460,12 @@ html, body {
     <div class="footer-col">
       <h4>Contact</h4>
       <ul>
-        <li><a href="mailto:support@rippedindex.org">support@rippedindex.org</a></li>
+        <li><a href="mailto:support@nassalab.org">support@nassalab.org</a></li>
         <li class="muted">Accepted: BTC • ETH • USDT • Card • Bank</li>
       </ul>
     </div>
   </div>
-  <div class="footer-bottom">© <span id="year"></span> Ripped Index — All rights reserved</div>
+  <div class="footer-bottom">© <span id="year"></span> Nassalab — All rights reserved</div>
 </footer>
 
 <script>
@@ -712,7 +712,7 @@ function renderProducts(){
   else if(sort === 'name-asc') list.sort((a,b)=> (a.name||'').localeCompare(b.name||''));
 
   FILTERED = list;
-  
+
   // --- START FEATURED LIMIT MODIFICATION (index.html only) ---
   const featuredLimit = 7; // Changed from 5 to 7
   // Use .slice(-N) to get the last N elements (the newest products)
@@ -813,7 +813,7 @@ function syncCartCountFromStorage(){
   } catch(e) {
     console.error("Error syncing cart count", e);
   }
-  
+
   const count = Object.values(cart).reduce((s,n)=> s + (Number(n)||0), 0);
   cartCountEl.textContent = count;
 }
@@ -930,6 +930,5 @@ s1.setAttribute('crossorigin','*');
 s0.parentNode.insertBefore(s1,s0);
 })();
 </script>
-<!--End of Tawk.to Script-->
 </body>
 </html>
